@@ -2,6 +2,7 @@
 :root {
   --body-bg-color: #22323D;
   --header-bg-color: #081C24;
+  --list-item-bg-color: #2A3A44;
 
   --header-h1-color: #fff;
 }
@@ -48,8 +49,16 @@
 
   /* RESULTS */
     li {
-      color: #fff;
+      height: 138px;
+      background-color: var(--list-item-bg-color);
+      color: var(--header-h1-color);
       list-style-type: none;
+      padding: 0 40px 0 0;
+      display: flex;
+    }
+
+    .movie_info {
+      flex: 5;
     }
 
     .info {

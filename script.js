@@ -1,7 +1,10 @@
 
 class Model {
   constructor() {
-    this.URL = 'https://api.themoviedb.org/3/movie/top_rated?api_key=4b04e5a207a38d712ac2460337479c38&language=en-US&page=1';
+    this.BASE_URL = 'https://api.themoviedb.org/3';
+    this.APY_KEY = `api_key=4b04e5a207a38d712ac2460337479c38`;
+    this.SEARCH_MOVIE_URL = `${this.BASE_URL}/search/movie?${this.APY_KEY}&language=en-US&page=1&include_adult=false`;
+    this.SEARCH_MOVIES_TOP_RATED = `${this.BASE_URL}/movie/top_rated?${this.APY_KEY}&language=en-US&page=1`;
     this.searchText = '';
     this.movies = []
   }
@@ -19,20 +22,23 @@ class Model {
     this.onBindMoviesListChanged(this.movies)
   }
 
-  handleSubmit = (evt) => {
-    evt.preventDefault()
+  getUrl = searchInputValue =>
+    searchInputValue === ''
+      ? this.SEARCH_MOVIES_TOP_RATED
+      : this.SEARCH_MOVIE_URL
 
-    fetch(this.URL)
+  handleSubmit(searchInput) {
+    const searchInputValue = searchInput.value
+    const url = this.getUrl(searchInputValue)
+
+    fetch(url)
       .then((response) => response.json())
       .then(data => {
+        console.log(data)
         this.movies = data.results
         this.sortMoviesBy('vote_average')
-
-
         this.onBindMoviesListChanged(data)
       })
-
-    // this.movies = ['movie1', 'movie2']
   }
 
 }
@@ -42,7 +48,8 @@ class View {
     this.resultsHTML = document.getElementById("results")
     this.searchInput = document.getElementById("search_input");
     this.submitButton = document.getElementById("submit_trigger");
-    this.sortyByVoteButton = document.getElementById("sort_by_vote")
+    this.sortyByVoteButton = document.getElementById("sort_by_vote");
+    this.BASE_URL = 'http://image.tmdb.org/t/p/w92//';
   }
 
   handleOnChange() {
@@ -62,8 +69,11 @@ class View {
 
     return `
       <li>
-        <span class="info">${title}</span>
-        <span class="info">${overview}</span>
+        <img src=${this.BASE_URL}${movie.poster_path} />
+        <div class="movie_info">
+          <span class="info">${title}</span>
+          <span class="info">${overview}</span>
+        </div>
       </li>`
   }
 
@@ -82,7 +92,7 @@ class Controller {
     this.view.bindSortByVote(this.handleBySortByVote)
   }
 
-  handleSubmit = e => this.model.handleSubmit(e)
+  handleSubmit = () => this.model.handleSubmit(this.view.searchInput)
 
   onBindMoviesListChanged = () => this.view.render(this.model.movies)
 
