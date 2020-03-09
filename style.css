@@ -46,14 +46,14 @@
     font-family: 'Roboto', sans-serif;
   }
 
-  button {
-    background-color: var(--green);
-    border-radius: 8px;
+  button, select {
     padding: 10px 20px;
+    background-color: var(--green);
     color: var(--header-header-color);
+    font-size: 14px;
+    border-radius: 8px;
     border: 0;
     cursor: pointer;
-    font-size: 14px;
   }
 
   /* HEADER */
@@ -113,6 +113,8 @@
 
     #controls {
       margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
     }
 
   /* SEARCH */
@@ -151,4 +153,16 @@
       margin-left: -50px;
       width: 32px;
       cursor: pointer;
+    }
+
+  /* CUSTOME SELECT */
+
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: var(--green) url('./arrow-down.svg') 90% / 15% no-repeat;
+      padding-right: 50px;
+      background-size: 30px 30px;
+      margin-left: 20px;
     }

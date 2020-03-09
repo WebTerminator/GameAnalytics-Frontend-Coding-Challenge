@@ -5,6 +5,7 @@ class Model {
     this.APY_KEY = `api_key=4b04e5a207a38d712ac2460337479c38`;
     this.SEARCH_MOVIE_URL = `${this.BASE_URL}/search/movie?${this.APY_KEY}&language=en-US&page=1&include_adult=false`;
     this.SEARCH_MOVIES_TOP_RATED = `${this.BASE_URL}/movie/top_rated?${this.APY_KEY}&language=en-US&page=1`;
+    this.SEARCH_MOVIES_UPCOMIMG = `${this.BASE_URL}/movie/upcoming?${this.APY_KEY}&language=en-US&page=1`;
     this.searchText = '';
     this.movies = [];
     this.fav_movies = [];
@@ -15,34 +16,58 @@ class Model {
   }
 
   updateSearchText(ev) {
-    this.searchText = ev.target.value
+    this.searchText = ev.target.value;
   }
 
   sortMoviesBy(sortBy) {
-    this.movies.sort((a, b) => b[sortBy] - a[sortBy])
-    this.onBindMoviesListChanged(this.movies)
+    this.movies.sort((a, b) => b[sortBy] - a[sortBy]);
+    this.onBindMoviesListChanged(this.movies);
   }
 
-  getUrl = searchInputValue =>
-    searchInputValue === ''
-      ? this.SEARCH_MOVIES_TOP_RATED
-      : `${this.SEARCH_MOVIE_URL}&query=${searchInputValue}`
+  getUrl = searchInputValue => {
+    let url;
 
-  handleSubmit(searchInput) {
-    const searchInputValue = searchInput.value
-    const url = this.getUrl(searchInputValue)
+    if (searchInputValue !== '') {
+      url = `${this.SEARCH_MOVIE_URL}&query=${searchInputValue}`
+    }
+    else if (searchInputValue === 'upcoming') {
+      url = `${this.SEARCH_MOVIES_UPCOMIMG}`
+    }
+    else {
+      url = this.SEARCH_MOVIES_TOP_RATED
+    }
 
+    console.log(url)
+
+    return url;
+  }
+
+  fethcMovies(url) {
     fetch(url)
       .then((response) => response.json())
       .then(data => {
-        this.movies = data.results
-        this.sortMoviesBy('vote_average')
-        this.onBindMoviesListChanged(data)
+        this.movies = data.results;
+        this.sortMoviesBy('vote_average');
+        this.onBindMoviesListChanged(data);
       })
   }
 
-  setFavMovieIcon(clicked) {
-    return clicked ? 1 : 2
+  handleSubmit(searchInput) {
+    const searchInputValue = searchInput.value;
+    const url = this.getUrl(searchInputValue);
+    this.fethcMovies(url);
+  }
+
+  filterBy(e) {
+    if (e.target.value === 'fav') {
+      const local_fav_movies = JSON.parse(localStorage['fav-movies']);
+      this.movies = this.movies.filter(movie => local_fav_movies.includes(movie.id))
+      this.onBindMoviesListChanged(this.movies);
+    }
+    else if (e.target.value === 'upcoming') {
+      const url = this.getUrl('upcoming');
+      this.fethcMovies(url);
+    }
   }
 }
 
@@ -52,6 +77,7 @@ class View {
     this.searchInput = document.getElementById("search_input");
     this.submitButton = document.getElementById("submit_trigger");
     this.sortyByVoteButton = document.getElementById("sort_by_vote");
+    this.filterBy = document.getElementById("filter_by");
     this.BASE_URL = 'http://image.tmdb.org/t/p/w92//';
     this.fav_movies = []
   }
@@ -78,7 +104,7 @@ class View {
         const isNotFavMovie = !fav_movies.includes(id);
 
         if (isNotFavMovie) {
-          fav_movies.push(id);
+          fav_movies.push(parseInt(id));
           updateLocalStorage(fav_movies);
           e.target.src = './heart_green.svg';
         } else {
@@ -90,6 +116,9 @@ class View {
     })
   }
 
+  bindOnFilter = handler =>
+    this.filterBy.addEventListener('change', e => handler(e));
+
   getPosterUrl = movie =>
     movie.poster_path
       ? `${this.BASE_URL}${movie.poster_path}`
@@ -99,7 +128,12 @@ class View {
     const { id, overview, release_date, title } = movie
 
     const date = release_date.substring(0, 4);
-    const posterUrl = this.getPosterUrl(movie)
+    const posterUrl = this.getPosterUrl(movie);
+    const TEXT_LIMIT = 460;
+    const description =
+      overview.length > TEXT_LIMIT
+        ? `${overview.substring(0, TEXT_LIMIT)}${' ...'}`
+        : overview;
 
     return `
       <li>
@@ -109,7 +143,7 @@ class View {
             ${title} 
             <span>(${date})</span>
           </h3>
-          <span class="info">${overview}</span>
+          <span class="info">${description}</span>
         </div>
         <div class="box_2">
           <img class="fav_icon" data-id="${id}" src="./heart.svg" />
@@ -118,7 +152,7 @@ class View {
       </li>`
   }
 
-  render(results) {
+  renderResults(results) {
     this.resultsHTML.innerHTML = results.map(movie => this.setMovieHTML(movie))
   }
 }
@@ -132,11 +166,13 @@ class Controller {
     this.view.bindSubmit(this.handleSubmit);
     this.view.bindSortByVote(this.handleBySortByVote);
     this.view.bindSetFavMovie(this.model.fav_movies);
+    this.view.bindOnFilter(this.handleOnFilter);
   }
 
   handleSubmit = () => this.model.handleSubmit(this.view.searchInput);
-  onBindMoviesListChanged = () => this.view.render(this.model.movies);
+  onBindMoviesListChanged = () => this.view.renderResults(this.model.movies);
   handleBySortByVote = () => this.model.sortMoviesBy('vote_count');
+  handleOnFilter = e => this.model.filterBy(e, this.model.fav_movies);
 }
 
 const App = new Controller(new Model(), new View())
