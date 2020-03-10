@@ -35,12 +35,14 @@
 
         <div class="filter">
           <select id="filter_by">
+            <option value="">Filter by</option>
             <option value="fav">Favourites movies</option>
             <option value="upcoming">Upcoming movies</option>
           </select>
         </div>
       </div>
 
+      <div id="movies_length"></div>
       <ul id="results">
       </ul>
     </div>
@@ -48,7 +50,10 @@
   <footer>
     <div class="container_inner"></div>
   </footer>
-  <script src="script.js"></script>
+  <script src="modules/model.js"></script>
+  <script src="modules/view.js"></script>
+  <script src="./script.js"></script>
+
 </body>
 
 </html>
