@@ -1,7 +1,7 @@
 export default class Model {
   constructor() {
     this.BASE_URL = 'https://api.themoviedb.org/3';
-    this.APY_KEY = `api_key=4b04e5a207a38d712ac2460337479c38`;
+    this.APY_KEY = `insert your API key`;
     this.SEARCH_MOVIE_URL = `${this.BASE_URL}/search/movie?${this.APY_KEY}&language=en-US&page=1&include_adult=false`;
     this.SEARCH_MOVIES_TOP_RATED = `${this.BASE_URL}/movie/top_rated?${this.APY_KEY}&language=en-US&page=1`;
     this.SEARCH_MOVIES_UPCOMIMG = `${this.BASE_URL}/movie/upcoming?${this.APY_KEY}&language=en-US&page=1`;
