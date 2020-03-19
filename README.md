@@ -4,7 +4,7 @@
 
 ## Technologies required
 
-- Before running the application, the enviroment will need to have node and http-server installed.
+- Before running the application, the enviroment will need to have node and http-server (https://www.npmjs.com/package/http-server) installed.
 
 ## How to run the app locally
 
