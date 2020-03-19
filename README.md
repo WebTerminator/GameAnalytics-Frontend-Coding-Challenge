@@ -2,6 +2,10 @@
 
 - API used: http://developers.themoviedb.org/3/
 
+## Technologies required
+
+- Before running the application, the enviroment will need to have node and http-server installed.
+
 ## How to run the app locally
 
 - run `yarn` or `npm install`
