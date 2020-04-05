@@ -5,7 +5,7 @@ import Model from '../model.js'
 
 describe('Model', function () {
   const model = new Model();
-  const API_KEY = 'api_key=4b04e5a207a38d712ac2460337479c38';
+  const API_KEY = 'APY_KEY';
 
   describe('getUrl()', () => {
     it('should return the correct url when getUrl is called with an empty parameter', function () {
